@@ -1,0 +1,932 @@
+% leeds-harvard.bbx
+% ---------------------------------------------------------------------------
+% biblatex bibliography style for the University of Leeds "Leeds Harvard"
+% referencing style.
+%
+% Reference: https://library.leeds.ac.uk/referencing-examples/9/leeds-harvard
+%
+% Engine agnostic: this file contains only citation logic, field formatting,
+% punctuation and localisation strings.  It loads no fonts, encodings or
+% layout packages and runs unchanged on pdfLaTeX, XeLaTeX and LuaLaTeX
+% (requires biblatex >= 3.10 with the Biber backend).
+%
+% Usage:  \usepackage[style=leeds-harvard]{biblatex}
+% ---------------------------------------------------------------------------
+\ProvidesFile{leeds-harvard.bbx}
+  [2026/10/15 v1.0.0 biblatex bibliography style: Leeds Harvard]
+
+\RequireBibliographyStyle{standard}
+
+% ===========================================================================
+% Style options
+% ===========================================================================
+% hyphenranges=true  (default) : page/date ranges as in the Leeds guide,
+%                                 e.g. pp.652-669, 23-25 June 2014
+% hyphenranges=false            : typographic en dash
+\newtoggle{lh:hyphenranges}
+\toggletrue{lh:hyphenranges}
+\DeclareBibliographyOption[boolean]{hyphenranges}[true]{%
+  \settoggle{lh:hyphenranges}{#1}}
+
+% noplace=false / no-place=false (default): do not display "[no place]" when location is omitted
+% noplace=true  / no-place=true           : display "[no place]" when location is omitted (strict Leeds)
+\newtoggle{lh:noplace}
+\togglefalse{lh:noplace}
+\DeclareBibliographyOption[boolean]{noplace}[true]{%
+  \settoggle{lh:noplace}{#1}}
+\DeclareBibliographyOption[boolean]{no-place}[true]{%
+  \settoggle{lh:noplace}{#1}}
+
+% ===========================================================================
+% Global options
+% ===========================================================================
+\ExecuteBibliographyOptions{
+  labeldateparts = true,
+  sorting        = nyt,   % alphabetical by author, then year, then title
+  maxbibnames    = 999,   % "include all author names in the reference"
+  minbibnames    = 999,
+  giveninits     = true,  % Family name, INITIAL(S).
+  useprefix      = true,  % van der Kolk, J.
+  datecirca      = true,
+}
+
+% Leeds Harvard: if there is no date use [no date].  The access date of an
+% online source is never used as the label year.
+\DeclareLabeldate{%
+  \field{date}
+  \field{year}
+  \field{eventdate}
+  \field{origdate}
+  \literal{nodate}%
+}
+
+% ===========================================================================
+% NASA ADS / astrophysics support  (Biber source map, applied at read time)
+% ===========================================================================
+% BibTeX exported from the SAO/NASA Astrophysics Data System is used as is:
+%
+%  1. ADS journal macros (\apj, \mnras, \aap, ...) are replaced by the full
+%     journal title -- Leeds Harvard does not allow abbreviated titles, and
+%     aas_macros.sty is not needed.
+%  2. Link priority: DOI > url (publisher/journal page) > adsurl.  The ADS
+%     abstract page is copied to url only when no url is given.
+%  3. arXiv-only records (journal = {arXiv e-prints}) become pre-prints:
+%     [Pre-print]. ... arXiv. [Online]. Available from: https://doi.org/
+%     10.48550/arXiv.<id>  (the DOI is derived from eprint if ADS gave none).
+%
+% \lh@adsjournal{macro}{Full Title}: one replacement per BibTeX field.
+\newcommand*{\lh@adsjournal}[2]{%
+  \step[fieldsource=journal,   match=\regexp{\A\s*\\#1\s*\Z}, replace={#2}]%
+  \step[fieldsource=booktitle, match=\regexp{\A\s*\\#1\s*\Z}, replace={#2}]%
+  \step[fieldsource=series,    match=\regexp{\A\s*\\#1\s*\Z}, replace={#2}]}
+\newcommand*{\lh@adsjournals}{%
+  \lh@adsjournal{aj}{The Astronomical Journal}%
+  \lh@adsjournal{actaa}{Acta Astronomica}%
+  \lh@adsjournal{araa}{Annual Review of Astronomy and Astrophysics}%
+  \lh@adsjournal{apj}{The Astrophysical Journal}%
+  \lh@adsjournal{apjl}{The Astrophysical Journal Letters}%
+  \lh@adsjournal{apjs}{The Astrophysical Journal Supplement Series}%
+  \lh@adsjournal{ao}{Applied Optics}%
+  \lh@adsjournal{apss}{Astrophysics and Space Science}%
+  % (written with "and": an ampersand cannot pass through the XML .bcf)
+  \lh@adsjournal{aap}{Astronomy and Astrophysics}%
+  \lh@adsjournal{aapr}{The Astronomy and Astrophysics Review}%
+  \lh@adsjournal{aaps}{Astronomy and Astrophysics Supplement Series}%
+  \lh@adsjournal{azh}{Astronomicheskii Zhurnal}%
+  \lh@adsjournal{baas}{Bulletin of the American Astronomical Society}%
+  \lh@adsjournal{caa}{Chinese Astronomy and Astrophysics}%
+  \lh@adsjournal{cjaa}{Chinese Journal of Astronomy and Astrophysics}%
+  \lh@adsjournal{icarus}{Icarus}%
+  \lh@adsjournal{jcap}{Journal of Cosmology and Astroparticle Physics}%
+  \lh@adsjournal{jrasc}{Journal of the Royal Astronomical Society of Canada}%
+  \lh@adsjournal{memras}{Memoirs of the Royal Astronomical Society}%
+  \lh@adsjournal{mnras}{Monthly Notices of the Royal Astronomical Society}%
+  \lh@adsjournal{na}{New Astronomy}%
+  \lh@adsjournal{nar}{New Astronomy Reviews}%
+  \lh@adsjournal{pra}{Physical Review A}%
+  \lh@adsjournal{prb}{Physical Review B}%
+  \lh@adsjournal{prc}{Physical Review C}%
+  \lh@adsjournal{prd}{Physical Review D}%
+  \lh@adsjournal{pre}{Physical Review E}%
+  \lh@adsjournal{prl}{Physical Review Letters}%
+  \lh@adsjournal{pasa}{Publications of the Astronomical Society of Australia}%
+  \lh@adsjournal{pasp}{Publications of the Astronomical Society of the Pacific}%
+  \lh@adsjournal{pasj}{Publications of the Astronomical Society of Japan}%
+  \lh@adsjournal{rmxaa}{Revista Mexicana de Astronom\'{\i}a y Astrof\'{\i}sica}%
+  \lh@adsjournal{qjras}{Quarterly Journal of the Royal Astronomical Society}%
+  \lh@adsjournal{skytel}{Sky and Telescope}%
+  \lh@adsjournal{solphys}{Solar Physics}%
+  \lh@adsjournal{sovast}{Soviet Astronomy}%
+  \lh@adsjournal{ssr}{Space Science Reviews}%
+  \lh@adsjournal{zap}{Zeitschrift f\"{u}r Astrophysik}%
+  \lh@adsjournal{nat}{Nature}%
+  \lh@adsjournal{iaucirc}{IAU Circulars}%
+  \lh@adsjournal{aplett}{Astrophysical Letters}%
+  \lh@adsjournal{apspr}{Astrophysics and Space Physics Research}%
+  \lh@adsjournal{bain}{Bulletin of the Astronomical Institutes of the Netherlands}%
+  \lh@adsjournal{fcp}{Fundamentals of Cosmic Physics}%
+  \lh@adsjournal{gca}{Geochimica et Cosmochimica Acta}%
+  \lh@adsjournal{grl}{Geophysical Research Letters}%
+  \lh@adsjournal{jcp}{The Journal of Chemical Physics}%
+  \lh@adsjournal{jgr}{Journal of Geophysical Research}%
+  \lh@adsjournal{jqsrt}{Journal of Quantitative Spectroscopy and Radiative Transfer}%
+  \lh@adsjournal{memsai}{Memorie della Societ\`{a} Astronomica Italiana}%
+  \lh@adsjournal{nphysa}{Nuclear Physics A}%
+  \lh@adsjournal{physrep}{Physics Reports}%
+  \lh@adsjournal{physscr}{Physica Scripta}%
+  \lh@adsjournal{planss}{Planetary and Space Science}%
+  \lh@adsjournal{procspie}{Proceedings of the SPIE}%
+  \lh@adsjournal{psj}{The Planetary Science Journal}%
+  \lh@adsjournal{rnaas}{Research Notes of the American Astronomical Society}%
+  \lh@adsjournal{maps}{Meteoritics and Planetary Science}%
+  \lh@adsjournal{aas}{American Astronomical Society Meeting Abstracts}%
+  \lh@adsjournal{dps}{AAS/Division for Planetary Sciences Meeting Abstracts}}
+
+\DeclareStyleSourcemap{%
+  \maps[datatype=bibtex]{%
+    % 1. journal macros -> full titles
+    \map{\lh@adsjournals}%
+    % 2. adsurl is a fallback link only (never replaces a given url)
+    \map[overwrite=false]{%
+      \step[fieldsource=adsurl, final]%
+      \step[fieldset=url, origfieldval]}%
+    % 3a. arXiv-only record without a DOI: DOI from the arXiv identifier
+    \map[overwrite=false]{%
+      \step[fieldsource=journal,
+            match=\regexp{\A\s*arXiv\se-prints\s*\Z}, final]%
+      \step[fieldsource=eprint, final]%
+      \step[fieldset=doi, origfieldval]}%
+    \map[overwrite=true]{%
+      \step[fieldsource=journal,
+            match=\regexp{\A\s*arXiv\se-prints\s*\Z}, final]%
+      \step[fieldsource=doi,
+            match=\regexp{\A\s*(?:arXiv:)?(\d{4}\.\d{4,5}|[a-zA-Z\-]+(?:\.[A-Z]{2})?/\d{7})(?:v\d+)?\s*\Z},
+            replace={10.48550/arXiv.$1}]}%
+    % 3b. arXiv-only record: Leeds Harvard pre-print, no pseudo page number
+    \map[overwrite=true]{%
+      \step[fieldsource=journal,
+            match=\regexp{\A\s*arXiv\se-prints\s*\Z}, final]%
+      \step[fieldset=journal, fieldvalue={arXiv}]%
+      \step[fieldset=pubstate, fieldvalue={preprint}]%
+      \step[fieldset=eid, null]%
+      \step[fieldset=pages, null]}%
+  }%
+}
+
+% ===========================================================================
+% Localisation strings
+% ===========================================================================
+\NewBibliographyString{%
+  lhonline,lhaccessed,lhavailablefrom,lhnopagination,lharticleno,
+  lhnoplace,lhnopublisher,lhed,lheds,lhtransby,lhin,lhvol,
+  lhpreprint,lhpostprint,lhforthcoming,lhsoftware,lhunpublished}
+
+\newcommand*{\lh@defstrings}[1]{%
+  \DefineBibliographyStrings{#1}{%
+    lhonline        = {Online},
+    lhaccessed      = {Accessed},
+    lhavailablefrom = {Available from},
+    lhnopagination  = {no pagination},
+    lharticleno     = {article no},
+    lhnoplace       = {no place},
+    lhnopublisher   = {no publisher},
+    lhed            = {ed\adddot},
+    lheds           = {eds\adddot},
+    lhtransby       = {Translated by},
+    lhin            = {In},
+    lhvol           = {Vol},
+    lhpreprint      = {Pre-print},
+    lhpostprint     = {Post-print},
+    lhforthcoming   = {Forthcoming},
+    lhsoftware      = {Software},
+    lhunpublished   = {Unpublished},
+    nodate          = {no date},
+    andothers       = {et al\adddot},
+    and             = {and},
+    page            = {p\adddot},
+    pages           = {pp\adddot},
+    edition         = {ed\adddot},
+    phdthesis       = {Ph.D. thesis},
+    circa           = {ca\adddot},
+    bibliography    = {References},
+    references      = {References},
+  }%
+  \DefineBibliographyExtras{#1}{%
+    % no serial ("Oxford") comma: Ramirez (2010), Schneider (2011) and ...
+    \protected\def\finalandcomma{}%
+    \protected\def\bibrangedash{%
+      \iftoggle{lh:hyphenranges}{-}{\textendash}\penalty\hyphenpenalty}%
+  }%
+}
+\forcsvlist{\lh@defstrings}
+  {english,british,american,australian,canadian,newzealand}
+
+% Leeds Harvard: The reference list is titled "References" by default across
+% all document classes (article, report, book, thesis, etc.).
+\AtBeginDocument{%
+  \def\bibname{References}%
+  \def\refname{References}}
+
+% ===========================================================================
+% Names
+% ===========================================================================
+% All names are inverted (Family, I.) except translators ("Translated by
+% M. Hoffman").  Initials are not spaced: "MacNaughton, S.J.".
+\DeclareNameAlias{default}{family-given}
+\DeclareNameAlias{sortname}{family-given}
+\DeclareNameAlias{author}{family-given}
+\DeclareNameAlias{editor}{family-given}
+\DeclareNameAlias{bookauthor}{family-given}
+\DeclareNameAlias{translator}{given-family}
+
+\renewcommand*{\bibinitdelim}{}
+\DeclareDelimFormat{multinamedelim}{\addcomma\space}
+\DeclareDelimFormat{finalnamedelim}{\addspace\bibstring{and}\space}
+\DeclareDelimFormat{andothersdelim}{\addspace}
+\DeclareDelimFormat{finallistdelim}{\addspace\bibstring{and}\space}
+
+% ===========================================================================
+% Punctuation
+% ===========================================================================
+\renewcommand*{\newunitpunct}{\addperiod\space}
+\renewcommand*{\newblockpunct}{\addperiod\space}
+\renewcommand*{\subtitlepunct}{\addcolon\space}
+\renewcommand*{\intitlepunct}{\addcolon\space}
+\renewcommand*{\bibpagespunct}{\addcomma\space}
+\renewcommand*{\ppspace}{}% "p.24", "pp.20-29"
+
+% ===========================================================================
+% Field formats
+% ===========================================================================
+\DeclareFieldFormat{lh:plain}{#1}
+\DeclareFieldFormat{lh:emph}{\mkbibemph{#1}}
+
+% Titles of stand-alone works are italic; titles of parts (articles,
+% chapters, papers, datasets) are plain.
+\DeclareFieldFormat*{title}{\mkbibemph{#1}}
+\DeclareFieldFormat
+  [article,inbook,incollection,inproceedings,bookinbook,suppbook,
+   suppcollection,suppperiodical,inreference,dataset]
+  {title}{#1}
+\DeclareFieldFormat*{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat
+  [article,inbook,incollection,inproceedings,bookinbook,suppbook,
+   suppcollection,suppperiodical,inreference,dataset]
+  {citetitle}{#1}
+\DeclareFieldFormat{journaltitle}{\mkbibemph{#1}}
+\DeclareFieldFormat{booktitle}{\mkbibemph{#1}}
+\DeclareFieldFormat{maintitle}{\mkbibemph{#1}}
+\DeclareFieldFormat{eventtitle}{#1}
+\DeclareFieldFormat{venue}{#1}
+\DeclareFieldFormat{series}{#1}
+
+% Journal: **Volume**(issue number)
+\DeclareFieldFormat[article,periodical,suppperiodical]{volume}{\mkbibbold{#1}}
+\DeclareFieldFormat[article,periodical,suppperiodical]{number}{\mkbibparens{#1}}
+
+% Page numbers in the reference list are always prefixed: p.1 / pp.652-669
+% (also pp.S236-S242).  A value is a range/list if it contains a range dash,
+% a hyphen, a comma or a range separator.
+\newcommand*{\lh@ifinstr}[2]{%
+  \begingroup
+  \edef\lh@tempa{\endgroup
+    \noexpand\in@{\detokenize{#1}}{\detokenize{#2}}}%
+  \lh@tempa
+  \ifin@
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
+\newcommand*{\lh@ifrange}[1]{%
+  \lh@ifinstr{\bibrangedash}{#1}
+    {\@firstoftwo}
+    {\lh@ifinstr{-}{#1}
+       {\@firstoftwo}
+       {\lh@ifinstr{,}{#1}
+          {\@firstoftwo}
+          {\lh@ifinstr{\bibrangessep}{#1}
+             {\@firstoftwo}
+             {\@secondoftwo}}}}}
+\DeclareFieldFormat{pages}{%
+  \lh@ifrange{#1}{\bibstring{pages}}{\bibstring{page}}\ppspace\mknormrange{#1}}
+\DeclareFieldFormat{eid}{#1}
+\DeclareFieldFormat{version}{\mkbibparens{#1}}
+\DeclareFieldFormat{howpublished}{\mkbibbrackets{#1}}
+\DeclareFieldFormat{type}{\ifbibstring{#1}{\bibstring{#1}}{#1}}
+
+% 5th ed. / Rev ed.
+\DeclareFieldFormat{edition}{%
+  \ifinteger{#1}
+    {\mkbibordedition{#1}\addnbspace\bibstring{edition}}
+    {#1\isdot}}
+
+% [Pre-print] [Post-print] [Forthcoming]
+\DeclareFieldFormat{pubstate}{%
+  \mkbibbrackets{%
+    \ifbibstring{lh#1}
+      {\bibstring{lh#1}}
+      {\ifbibstring{#1}{\bibcpstring{#1}}{#1}}}}
+
+% DOIs are presented as links: https://doi.org/10.xxxx
+\DeclareFieldFormat{url}{\url{#1}}
+\DeclareFieldFormat{doi}{\url{https://doi.org/#1}}
+
+% ===========================================================================
+% Date helpers  (always "3 April 2024", independent of abbreviate=)
+% ===========================================================================
+\newcommand*{\lh@month}[1]{%
+  \ifcase\numexpr#1\relax
+  \or\biblstring{january}\or\biblstring{february}\or\biblstring{march}%
+  \or\biblstring{april}\or\biblstring{may}\or\biblstring{june}%
+  \or\biblstring{july}\or\biblstring{august}\or\biblstring{september}%
+  \or\biblstring{october}\or\biblstring{november}\or\biblstring{december}%
+  \fi}
+
+% #1 = date prefix ({} for date, url, event, eventend, ...)
+\newcommand*{\lh@daymonth}[1]{%
+  \iffieldundef{#1day}
+    {}
+    {\stripzeros{\thefield{#1day}}%
+     \iffieldundef{#1month}{}{\space}}%
+  \iffieldundef{#1month}
+    {}
+    {\lh@month{\thefield{#1month}}}}
+
+\newcommand*{\lh@fulldate}[1]{%
+  \iffieldundef{#1month}
+    {}
+    {\lh@daymonth{#1}\space}%
+  \thefield{#1year}}
+
+% True if a DOI or URL will be printed (respects the doi= and url= options)
+\newcommand*{\lh@ifonline}{%
+  \ifboolexpr{
+    ( togl {bbx:doi} and not test {\iffieldundef{doi}} )
+    or
+    ( togl {bbx:url} and not test {\iffieldundef{url}} )
+  }}
+
+% ===========================================================================
+% Building blocks
+% ===========================================================================
+% ed. / eds.   (#1 = name list)
+\newbibmacro*{lh:edstring}[1]{%
+  \printtext{%
+    \ifnumgreater{\value{#1}}{1}
+      {\bibstring{lheds}}
+      {\bibstring{lhed}}}}
+
+% Title (+ subtitle) with selectable format (#1, default: title)
+\newbibmacro*{lh:title}[1][title]{%
+  \ifboolexpr{
+    test {\iffieldundef{title}}
+    and
+    test {\iffieldundef{subtitle}}
+  }
+    {}
+    {\printtext[#1]{%
+       \printfield[titlecase]{title}%
+       \setunit{\subtitlepunct}%
+       \printfield[titlecase]{subtitle}}%
+     \newunit}%
+  \printfield{titleaddon}}
+
+% Leading name block: author, else editor + "ed(s).", else title
+\newbibmacro*{lh:names}{%
+  \ifboolexpr{
+    test \ifuseauthor
+    and
+    not test {\ifnameundef{author}}
+  }
+    {\printnames{author}}
+    {\ifboolexpr{
+       test \ifuseeditor
+       and
+       not test {\ifnameundef{editor}}
+     }
+       {\printnames{editor}%
+        \setunit{\addspace}%
+        \usebibmacro{lh:edstring}{editor}%
+        \clearname{editor}}
+       {\usebibmacro{lh:title}%
+        \clearfield{title}%
+        \clearfield{subtitle}%
+        \clearfield{titleaddon}}}}
+
+% Year (with a/b suffix) or [no date]
+\newbibmacro*{lh:date}{%
+  \ifboolexpr{
+    test {\iffieldundef{labelyear}}
+    or
+    test {\iffieldequalstr{labelyear}{nodate}}
+  }
+    {\iffieldequalstr{pubstate}{forthcoming}
+       {}% Royall, C.P. ... [Forthcoming]. Title ...
+       {\printtext{%
+          \mkbibbrackets{\bibxstring{nodate}}%
+          \printfield{extradate}}}}
+    {\printlabeldateextra}}
+
+% Family, I. Year. [Pre-print].
+\newbibmacro*{lh:names+date}{%
+  \usebibmacro{lh:names}%
+  \newunit
+  \usebibmacro{lh:date}%
+  \newunit
+  \printfield{pubstate}}
+
+% [Kindle DX e-book]  [Online]
+\newbibmacro*{lh:medium}{%
+  \printfield{howpublished}%
+  \newunit
+  \lh@ifonline
+    {\printtext{\mkbibbrackets{\bibstring{lhonline}}}}
+    {}}
+
+% Series title, Vol 3
+\newbibmacro*{lh:series}{%
+  \printfield{series}%
+  \setunit{\addcomma\space}%
+  \iffieldundef{number}
+    {\iffieldundef{volume}
+       {}
+       {\printtext{\bibstring{lhvol}\addnbspace}%
+        \printfield{volume}}}
+    {\printtext{\bibstring{lhvol}\addnbspace}%
+     \printfield{number}}}
+
+% Edition (only if not first edition)
+\newbibmacro*{lh:edition}{%
+  \iffieldequalstr{edition}{1}
+    {}
+    {\printfield{edition}}}
+
+% Malcolm, N. ed.
+\newbibmacro*{lh:byeditor}{%
+  \ifnameundef{editor}
+    {}
+    {\printnames{editor}%
+     \setunit{\addspace}%
+     \usebibmacro{lh:edstring}{editor}}}
+
+% Translated by M. Hoffman
+\newbibmacro*{lh:bytranslator}{%
+  \ifnameundef{translator}
+    {}
+    {\printtext{\bibstring{lhtransby}}%
+     \setunit{\addspace}%
+     \printnames{translator}}}
+
+% Place of publication: Publisher
+%   #1 = list holding the publisher (publisher, institution, organization)
+%   #2 = true  -> print missing imprint placeholders if both are missing
+\newbibmacro*{lh:location+publisher}[2]{%
+  \ifboolexpr{
+    test {\iflistundef{location}}
+    and
+    test {\iflistundef{#1}}
+  }
+    {\ifstrequal{#2}{true}
+       {\iftoggle{lh:noplace}
+          {\printtext{%
+             \mkbibbrackets{\bibxstring{lhnoplace}}%
+             \addcolon\space
+             \mkbibbrackets{\bibxstring{lhnopublisher}}}}
+          {\printtext{%
+             \mkbibbrackets{\bibxstring{lhnopublisher}}}}}
+       {}}
+    {\iflistundef{location}
+       {\iftoggle{lh:noplace}
+          {\printtext{\mkbibbrackets{\bibxstring{lhnoplace}}}%
+           \setunit{\addcolon\space}}
+          {}}
+       {\printlist{location}%
+        \setunit{\addcolon\space}}%
+     \iflistundef{#1}
+       {\printtext{\mkbibbrackets{\bibxstring{lhnopublisher}}}}
+       {\printlist{#1}}}}
+
+% Place: Publisher, choosing the first available publisher-like list
+\newbibmacro*{lh:publisher:any}[1]{%
+  \iflistundef{publisher}
+    {\iflistundef{institution}
+       {\usebibmacro{lh:location+publisher}{organization}{#1}}
+       {\usebibmacro{lh:location+publisher}{institution}{#1}}}
+    {\usebibmacro{lh:location+publisher}{publisher}{#1}}}
+
+% "In:" + editors / book author
+\newbibmacro*{lh:in:names}{%
+  \printtext{\bibstring{lhin}\addcolon}%
+  \setunit{\addspace}%
+  \ifnameundef{bookauthor}
+    {\ifnameundef{editor}
+       {}
+       {\printnames{editor}%
+        \setunit{\addspace}%
+        \usebibmacro{lh:edstring}{editor}}}
+    {\printnames{bookauthor}}}
+
+\newbibmacro*{lh:booktitle}{%
+  \ifboolexpr{
+    test {\iffieldundef{booktitle}}
+    and
+    test {\iffieldundef{booksubtitle}}
+  }
+    {}
+    {\printtext[booktitle]{%
+       \printfield[titlecase]{booktitle}%
+       \setunit{\subtitlepunct}%
+       \printfield[titlecase]{booksubtitle}}}}
+
+% 17/18 April 1986 | 23-25 June 2014 | 30 June-2 July 2014
+\newbibmacro*{lh:eventdate}{%
+  \iffieldundef{eventyear}
+    {}
+    {\printtext{%
+       \iffieldundef{eventendyear}
+         {\lh@fulldate{event}}
+         {\ifboolexpr{
+            test {\iffieldsequal{eventyear}{eventendyear}}
+            and
+            test {\iffieldsequal{eventmonth}{eventendmonth}}
+            and
+            not test {\iffieldundef{eventday}}
+          }
+            {\stripzeros{\thefield{eventday}}\bibrangedash
+             \lh@fulldate{eventend}}
+            {\iffieldsequal{eventyear}{eventendyear}
+               {\lh@daymonth{event}\bibrangedash\lh@fulldate{eventend}}
+               {\lh@fulldate{event}\bibrangedash\lh@fulldate{eventend}}}}}}}
+
+% _Title of conference proceedings, date of conference, location_
+\newbibmacro*{lh:proceedingstitle}{%
+  \ifboolexpr{
+    test {\iffieldundef{booktitle}}
+    and
+    test {\iffieldundef{eventtitle}}
+  }
+    {}
+    {\printtext[lh:emph]{%
+       \iffieldundef{booktitle}
+         {\printfield[titlecase]{eventtitle}}
+         {\printfield[titlecase]{booktitle}%
+          \setunit{\subtitlepunct}%
+          \printfield[titlecase]{booksubtitle}}%
+       \setunit{\addcomma\space}%
+       \usebibmacro{lh:eventdate}%
+       \setunit{\addcomma\space}%
+       \printfield{venue}}}}
+
+% _Journal Title_
+\newbibmacro*{lh:journal}{%
+  \ifboolexpr{
+    test {\iffieldundef{journaltitle}}
+    and
+    test {\iffieldundef{journalsubtitle}}
+  }
+    {}
+    {\printtext[journaltitle]{%
+       \printfield[titlecase]{journaltitle}%
+       \setunit{\subtitlepunct}%
+       \printfield[titlecase]{journalsubtitle}}}}
+
+% **39**(4), pp.652-669
+% **19**, article no: 25809 [no pagination]
+% **39**(4), [no pagination]
+% An electronic article identifier exported as both eid and pages (NASA ADS,
+% AAS, APS: eid = pages = {L60}) is an article number, not a page.
+\newbibmacro*{lh:journal:issue+pages}{%
+  \printfield{volume}%
+  \printfield{number}%
+  \setunit{\addcomma\space}%
+  \ifboolexpr{
+    test {\iffieldundef{pages}}
+    or
+    ( not test {\iffieldundef{eid}}
+      and
+      test {\iffieldsequal{eid}{pages}} )
+  }
+    {\iffieldundef{eid}
+       {\ifboolexpr{
+          test {\iffieldundef{volume}}
+          and
+          test {\iffieldundef{number}}
+        }
+          {}
+          {\printtext{\mkbibbrackets{\bibxstring{lhnopagination}}}}}
+       {\printtext{\bibstring{lharticleno}}%
+        \setunit{\addcolon\space}%
+        \printfield{eid}%
+        \setunit{\addspace}%
+        \printtext{\mkbibbrackets{\bibxstring{lhnopagination}}}}}
+    {\printfield{pages}}}
+
+% Newspapers: 24 May, p.1
+\newbibmacro*{lh:newspaper:date+pages}{%
+  \iffieldundef{month}
+    {}
+    {\printtext{\lh@daymonth{}}}%
+  \setunit{\addcomma\space}%
+  \printfield{pages}}
+
+\newbibmacro*{lh:note}{%
+  \printfield{note}%
+  \newunit
+  \printfield{addendum}}
+
+% [Accessed 3 April 2024]. Available from: https://doi.org/...
+% No full stop is added after the DOI/URL.
+\newbibmacro*{lh:access}{%
+  \iffieldundef{urlyear}
+    {}
+    {\printtext{%
+       \mkbibbrackets{\bibstring{lhaccessed}\space\lh@fulldate{url}}}}%
+  \newunit
+  \lh@ifonline
+    {\printtext{\bibstring{lhavailablefrom}\addcolon}%
+     \setunit{\addspace}%
+     \ifboolexpr{togl {bbx:doi} and not test {\iffieldundef{doi}}}
+       {\printfield{doi}}
+       {\printfield{url}}%
+     \nopunct}
+    {}}
+
+% ===========================================================================
+% Drivers
+% ===========================================================================
+% Journal article (also newspaper/magazine via entrysubtype=newspaper)
+\DeclareBibliographyDriver{article}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \usebibmacro{lh:journal}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \iffieldequalstr{entrysubtype}{newspaper}
+    {\usebibmacro{lh:newspaper:date+pages}}
+    {\usebibmacro{lh:journal:issue+pages}}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Book, e-book, edited book, proceedings volume
+\DeclareBibliographyDriver{book}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \usebibmacro{lh:series}%
+  \newunit
+  \usebibmacro{lh:edition}%
+  \newunit
+  \usebibmacro{lh:byeditor}%
+  \newunit
+  \usebibmacro{lh:bytranslator}%
+  \newunit
+  \usebibmacro{lh:location+publisher}{publisher}{true}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Book chapter (in an edited book)
+\DeclareBibliographyDriver{incollection}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \usebibmacro{lh:in:names}%
+  \newunit
+  \usebibmacro{lh:booktitle}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \usebibmacro{lh:edition}%
+  \newunit
+  \usebibmacro{lh:bytranslator}%
+  \newunit
+  \usebibmacro{lh:location+publisher}{publisher}{true}%
+  \setunit{\bibpagespunct}%
+  \printfield{pages}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Conference paper
+\DeclareBibliographyDriver{inproceedings}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \usebibmacro{lh:in:names}%
+  \newunit
+  \usebibmacro{lh:proceedingstitle}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \usebibmacro{lh:publisher:any}{false}%
+  \setunit{\bibpagespunct}%
+  \printfield{pages}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Report / working paper (book or e-book format)
+\DeclareBibliographyDriver{report}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \iffieldundef{number}
+    {}
+    {\printfield{type}%
+     \setunit{\addspace}%
+     \printfield{number}}%
+  \newunit
+  \usebibmacro{lh:edition}%
+  \newunit
+  \usebibmacro{lh:publisher:any}{false}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Thesis or dissertation: _Title_. Ph.D. thesis, University of Leeds.
+\DeclareBibliographyDriver{thesis}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \printfield{type}%
+  \setunit{\addcomma\space}%
+  \printlist{institution}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Website / webpage; blog post when maintitle or journaltitle is given
+\DeclareBibliographyDriver{online}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \ifboolexpr{
+    test {\iffieldundef{maintitle}}
+    and
+    test {\iffieldundef{journaltitle}}
+  }
+    {\usebibmacro{lh:title}}
+    {\usebibmacro{lh:title}[lh:plain]%
+     \newunit
+     \iffieldundef{month}
+       {}
+       {\printtext{\lh@daymonth{}}}%
+     \newunit
+     \printtext[lh:emph]{%
+       \iffieldundef{maintitle}
+         {\printfield[titlecase]{journaltitle}}
+         {\printfield[titlecase]{maintitle}}}}%
+  \newunit
+  \printfield{howpublished}%
+  \newunit
+  \printtext{\mkbibbrackets{\bibstring{lhonline}}}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Dataset: Title of dataset. _Publisher_. [Online].
+\DeclareBibliographyDriver{dataset}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \iflistundef{publisher}
+    {\iflistundef{organization}
+       {}
+       {\printtext[lh:emph]{\printlist{organization}}}}
+    {\printtext[lh:emph]{\printlist{publisher}}}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Software: Developer. Year. _Title_ (Version). [Software]. [Accessed ...].
+\DeclareBibliographyDriver{software}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \setunit{\addspace}%
+  \printfield{version}%
+  \newunit
+  \printtext{\mkbibbrackets{\bibstring{lhsoftware}}}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Unpublished document: _Title_. Unpublished.
+\DeclareBibliographyDriver{unpublished}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \printfield{howpublished}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \printtext{\bibstring{lhunpublished}}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% Anything else: the closest generic Leeds Harvard template
+\DeclareBibliographyDriver{misc}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{lh:names+date}%
+  \newunit
+  \usebibmacro{lh:title}%
+  \newunit
+  \usebibmacro{lh:medium}%
+  \newunit
+  \printfield{type}%
+  \setunit{\addspace}%
+  \printfield{number}%
+  \newunit
+  \usebibmacro{lh:edition}%
+  \newunit
+  \usebibmacro{lh:byeditor}%
+  \newunit
+  \usebibmacro{lh:bytranslator}%
+  \newunit
+  \usebibmacro{lh:publisher:any}{false}%
+  \newunit
+  \usebibmacro{lh:note}%
+  \newunit
+  \usebibmacro{lh:access}%
+  \usebibmacro{finentry}}
+
+% ---------------------------------------------------------------------------
+% Aliases
+% ---------------------------------------------------------------------------
+\DeclareBibliographyAlias{mvbook}{book}
+\DeclareBibliographyAlias{collection}{book}
+\DeclareBibliographyAlias{mvcollection}{book}
+\DeclareBibliographyAlias{proceedings}{book}
+\DeclareBibliographyAlias{mvproceedings}{book}
+\DeclareBibliographyAlias{reference}{book}
+\DeclareBibliographyAlias{mvreference}{book}
+\DeclareBibliographyAlias{inbook}{incollection}
+\DeclareBibliographyAlias{bookinbook}{incollection}
+\DeclareBibliographyAlias{suppbook}{incollection}
+\DeclareBibliographyAlias{suppcollection}{incollection}
+\DeclareBibliographyAlias{inreference}{incollection}
+\DeclareBibliographyAlias{suppperiodical}{article}
+\DeclareBibliographyAlias{periodical}{misc}
+\DeclareBibliographyAlias{booklet}{misc}
+\DeclareBibliographyAlias{manual}{misc}
+\DeclareBibliographyAlias{patent}{misc}
+
+\endinput

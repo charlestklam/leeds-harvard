@@ -1,0 +1,185 @@
+% leeds-harvard.cbx
+% ---------------------------------------------------------------------------
+% biblatex citation style for the University of Leeds "Leeds Harvard"
+% referencing style (author-date).
+%
+% Reference: https://library.leeds.ac.uk/info/1402/referencing/50/leeds-harvard-introduction
+%
+%   \parencite{key}            (Jones, 2017)
+%   \textcite{key}             Jones (2017)
+%   \parencite[24]{key}        (Jones, 2017, p.24)
+%   \parencite[20--29]{key}    (Jones, 2017, pp.20-29)
+%   \parencite[iv]{key}        (Amis, 1958, iv)        roman: no "p."
+%   three or more authors      (Jones et al., 2017)
+%   \parencite{a,b}            (Smith et al., 1998; Roberts, 2005)
+%   same author, other years   (Smith, 2001; 2005; 2013)
+%   same author, same year     (Jones, 1998a; Jones, 1998b)
+%   no date                    (Jones, no date)
+%   corporate author with      first:  (Organisation for Economic
+%     shortauthor = {OECD}             Co-operation and Development [OECD], 2011)
+%                              later:  (OECD, 2011)
+%
+% Engine agnostic: pure biblatex code, no engine-specific dependencies.
+% ---------------------------------------------------------------------------
+\ProvidesFile{leeds-harvard.cbx}
+  [2026/10/15 v1.0.0 biblatex citation style: Leeds Harvard]
+
+\RequireCitationStyle{authoryear-comp}
+
+% authoryear-comp switches on uniquename/uniquelist/sortcites; Leeds Harvard
+% always uses "First author et al." and keeps the order chosen by the author
+% (the guide asks for oldest first, then alphabetical within a year).
+\ExecuteBibliographyOptions{
+  maxcitenames = 2,
+  mincitenames = 1,
+  uniquename   = false,
+  uniquelist   = false,
+  sortcites    = false,
+  citetracker  = true,
+}
+
+% ===========================================================================
+% Delimiters
+% ===========================================================================
+\DeclareDelimFormat{nameyeardelim}{\addcomma\space}
+\DeclareDelimFormat{nonameyeardelim}{\addcomma\space}
+\DeclareDelimFormat[textcite]{nameyeardelim}{\addspace}
+\DeclareDelimFormat[textcite]{nonameyeardelim}{\addspace}
+\DeclareDelimFormat{postnotedelim}{\addcomma\space}
+\renewcommand*{\multicitedelim}{\addsemicolon\space}
+\renewcommand*{\compcitedelim}{\addsemicolon\space}
+
+% ===========================================================================
+% Page numbers in citations
+%   arabic numbers / ranges -> p.24, pp.20-29
+%   roman numerals          -> iv  (no prefix)
+%   anything else           -> as given (e.g. "Chapter 2", "no pagination")
+% ===========================================================================
+\newcommand*{\lh@ifarabicstart}[1]{%
+  \edef\lh@tempa{\detokenize{#1}}%
+  \edef\lh@tempa{\expandafter\@car\lh@tempa\relax\@nil}%
+  \expandafter\in@\expandafter{\lh@tempa}{0123456789}%
+  \ifin@
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
+
+\newcommand*{\lh@mkcitepages}[1]{%
+  \ifnumerals{#1}
+    {\lh@ifarabicstart{#1}
+       {\mkpageprefix[pagination][\mknormrange]{#1}}
+       {\mknormrange{#1}}}
+    {#1}}
+
+\DeclareFieldFormat{postnote}{\lh@mkcitepages{#1}}
+\DeclareFieldFormat{multipostnote}{\lh@mkcitepages{#1}}
+
+% ===========================================================================
+% Citation building blocks
+% ===========================================================================
+\DeclareFieldFormat{lh:citepubstate}{%
+  \ifbibstring{#1}{\bibxstring{#1}}{#1}}
+
+% Year + extradate; "no date"; "forthcoming" for undated forthcoming items
+\renewbibmacro*{cite:labeldate+extradate}{%
+  \iffieldundef{labelyear}
+    {}
+    {\printtext[bibhyperref]{%
+       \ifboolexpr{
+         test {\iffieldequalstr{labelyear}{nodate}}
+         and
+         not test {\iffieldundef{pubstate}}
+       }
+         {\printfield[lh:citepubstate]{pubstate}}
+         {\printlabeldateextra}}}}
+
+% Name in citation.  A corporate author with an abbreviation (shortauthor)
+% is given in full with the abbreviation in square brackets the first time,
+% and abbreviated afterwards.
+\newbibmacro*{cite:name}{%
+  \ifboolexpr{
+    not test {\ifnameundef{shortauthor}}
+    and
+    not test {\ifnameundef{author}}
+    and
+    not test {\ifciteseen}
+  }
+    {\printnames[labelname]{author}%
+     \setunit{\addspace}%
+     \printtext{\mkbibbrackets{\printnames[labelname]{shortauthor}}}}
+    {\printnames{labelname}}}
+
+% (Smith, 2001; 2005)  but  (Jones, 1998a; Jones, 1998b)
+\renewbibmacro*{cite}{%
+  \iffieldundef{shorthand}
+    {\ifboolexpr{
+       test {\ifnameundef{labelname}}
+       or
+       test {\iffieldundef{labelyear}}
+     }
+       {\usebibmacro{cite:label}%
+        \setunit{\printdelim{nonameyeardelim}}%
+        \usebibmacro{cite:labeldate+extradate}%
+        \usebibmacro{cite:reinit}}
+       {\ifboolexpr{
+          test {\iffieldequals{namehash}{\cbx@lasthash}}
+          and
+          not test {\iffieldequals{labelyear}{\cbx@lastyear}}
+        }
+          {\setunit{\compcitedelim}%
+           \usebibmacro{cite:labeldate+extradate}%
+           \savefield{labelyear}{\cbx@lastyear}}
+          {\usebibmacro{cite:name}%
+           \setunit{\printdelim{nameyeardelim}}%
+           \usebibmacro{cite:labeldate+extradate}%
+           \savefield{namehash}{\cbx@lasthash}%
+           \savefield{labelyear}{\cbx@lastyear}}}}
+    {\usebibmacro{cite:shorthand}%
+     \usebibmacro{cite:reinit}}%
+  \setunit{\multicitedelim}}
+
+% Jones (1998a; 1998b);  Ramirez (2010), Schneider (2011) and Roberts (2013)
+\renewbibmacro*{textcite}{%
+  \iffieldequals{namehash}{\cbx@lasthash}
+    {\iffieldundef{shorthand}
+       {\setunit{\compcitedelim}%
+        \usebibmacro{cite:labeldate+extradate}%
+        \savefield{labelyear}{\cbx@lastyear}}
+       {\setunit{\compcitedelim}%
+        \usebibmacro{cite:shorthand}%
+        \global\undef\cbx@lastyear}}
+    {\ifnameundef{labelname}
+       {\iffieldundef{shorthand}
+          {\usebibmacro{cite:label}%
+           \setunit{%
+             \global\booltrue{cbx:parens}%
+             \printdelim{nonameyeardelim}\bibopenparen}%
+           \ifnumequal{\value{citecount}}{1}
+             {\usebibmacro{prenote}}
+             {}%
+           \usebibmacro{cite:labeldate+extradate}}
+          {\usebibmacro{cite:shorthand}}}
+       {\usebibmacro{cite:name}%
+        \setunit{%
+          \global\booltrue{cbx:parens}%
+          \printdelim{nameyeardelim}\bibopenparen}%
+        \ifnumequal{\value{citecount}}{1}
+          {\usebibmacro{prenote}}
+          {}%
+        \iffieldundef{shorthand}
+          {\iffieldundef{labelyear}
+             {\usebibmacro{cite:label}}
+             {\usebibmacro{cite:labeldate+extradate}}%
+           \savefield{labelyear}{\cbx@lastyear}}
+          {\usebibmacro{cite:shorthand}%
+           \global\undef\cbx@lastyear}}%
+     \stepcounter{textcitecount}%
+     \savefield{namehash}{\cbx@lasthash}}%
+  \setunit{%
+    \ifbool{cbx:parens}
+      {\bibcloseparen\global\boolfalse{cbx:parens}}
+      {}%
+    \textcitedelim}}
+
+\endinput

@@ -1,0 +1,243 @@
+\documentclass[a4paper,11pt]{article}
+
+% Engine-specific font set-up (the style files themselves contain none)
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+\fi
+
+\usepackage[british]{babel}
+\usepackage{csquotes}
+\usepackage[style=leeds-harvard]{biblatex}
+\addbibresource{leeds-harvard-test.bib}
+\usepackage[hidelinks]{hyperref}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\title{Leeds-Harvard Referencing Style for BibLaTeX}
+\author{Charles Lam\\Language Centre, University of Leeds}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document demonstrates the \texttt{leeds-harvard} BibLaTeX style. It details the exact \LaTeX{} commands, rendered in-text citations, reference list formatting, and specific rules in the Leeds-Harvard style.
+\end{abstract}
+
+\section{In-Text Citations: Syntax \& Output}
+
+Leeds-Harvard is an author--date referencing system. Table~\ref{tab:citations} details the standard citation commands alongside their rendered output:
+
+\begingroup
+\small
+\begin{longtable}{@{} >{\raggedright}p{3.8cm} >{\raggedright}p{6.4cm} >{\raggedright\arraybackslash}p{4.8cm} @{}}
+\caption{In-text citation syntax and rendered Leeds-Harvard output.} \label{tab:citations} \\
+\toprule
+\textbf{Citation Scenario} & \textbf{\LaTeX{} Command} & \textbf{Rendered Output} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Citation Scenario} & \textbf{\LaTeX{} Command} & \textbf{Rendered Output} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Pparenthetical & \texttt{\textbackslash parencite\{shannon1948\}} & \parencite{shannon1948} \\
+Narrative & \texttt{\textbackslash textcite\{shannon1948\}} & \textcite{shannon1948} \\
+Specific page & \texttt{\textbackslash parencite[24]\{shannon1948\}} & \parencite[24]{shannon1948} \\
+Page range & \texttt{\textbackslash parencite[20--29]\{shannon1948\}} & \parencite[20--29]{shannon1948} \\
+Roman numerals & \texttt{\textbackslash parencite[iv]\{dirac1958\}} & \parencite[iv]{dirac1958} \\
+Organization author (first cite) & \texttt{\textbackslash parencite\{nasa2011\}} & \parencite{nasa2011} \\
+Organization author (subsequent) & \texttt{\textbackslash parencite\{nasa2011\}} & \parencite{nasa2011} \\
+Same author, multiple years & \texttt{\textbackslash parencite\{knuth1968,}\allowbreak\texttt{knuth1984texbook,}\allowbreak\texttt{knuth1997\}} & \parencite{knuth1968,knuth1984texbook,knuth1997} \\
+Multiple works, different authors & \texttt{\textbackslash parencite\{macnaughton1999,}\allowbreak\texttt{ahmed2012,knuth1997\}} & \parencite{macnaughton1999,ahmed2012,knuth1997} \\
+Narrative list of authors & \texttt{\textbackslash textcite\{adams1906,}\allowbreak\texttt{strogatz1994,han2026\}} & \textcite{adams1906,strogatz1994,han2026} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\section{What Users Should Expect from Leeds-Harvard Referencing}
+
+\begin{enumerate}
+\item Leeds-Harvard use the English word ``and'' instead of an ampersand (``\&''), e.g. \parencite{gencturk2015}) and in the reference list (e.g. \emph{Tanenbaum, A.S. and Wetherall, D.J.}).
+
+\item How does Leeds-Harvard handle multiple publications by the same author?
+\textbf{What to expect:} Leeds-Harvard compresses author names in parenthetical citations. If you cite multiple works by Donald Knuth, the author's surname is printed once followed by the publication years separated by semicolons:
+\begin{itemize}
+  \item \texttt{\textbackslash parencite\{knuth1968,knuth1984texbook,knuth1997\}} \\
+    yields \parencite{knuth1968,knuth1984texbook,knuth1997}.
+\end{itemize}
+
+\item In what order should multiple citations appear inside the same parentheses?}
+\textbf{What to expect:} Leeds-Harvard specifies that multiple sources in one citation must be arranged \textbf{chronologically} (oldest first), separated by semicolons:
+\begin{itemize}
+  \item \parencite{macnaughton1999,ahmed2012,knuth1997}.
+  \item \textbf{Important:} Because \texttt{sortcites=false} is set to honour the author's intentional citation order, list your BibTeX keys in chronological order in your \texttt{\textbackslash parencite} call.
+\end{itemize}
+
+\item When is ``et al.'' used in citations versus the reference list?\\
+\textbf{What to expect:}
+\begin{itemize}
+  \item \textbf{In-Text Citations:}
+    \begin{itemize}
+      \item 1 or 2 authors: Both surnames should appear (\parencite{shannon1948}, \parencite{gencturk2015}).
+      \item 3 or more authors: Only the first author followed by ``et al.'' (\parencite{macnaughton1999}).
+      \item Note that ``et al.'' is supposed to be written in upright roman font (i.e. \textbf{not italicised}) in Leeds-Harvard. 
+    \end{itemize}
+  \item \textbf{Reference List:} \emph{All} authors must be explicitly named regardless of how many there are. The abbreviation ``et al.'' is \textbf{not} permitted in the bibliography itself.
+\end{itemize}
+
+\item How are page numbers, page ranges, roman numerals, and unpaginated works formatted?\\
+\begin{itemize}
+  \item \textbf{Single page:} Lowercase \texttt{p.} without a space: \parencite[24]{shannon1948}.
+  \item \textbf{Page ranges:} \texttt{pp.} with a hyphen and no space: \parencite{shannon1948} (in bibliography: \emph{pp.379-423}).
+  \item \textbf{Roman numerals:} Do \emph{not} add \texttt{p.} to roman numerals: \texttt{\textbackslash parencite[iv]\{dirac1958\}} $\to$ \parencite[iv]{dirac1958}.
+  \item \textbf{No pagination:} If a work is unpaginated (e.g. an online article), specify \texttt{no pagination} in the postnote: \texttt{\textbackslash parencite[no pagination]\{dirac1958\}} $\to$ \parencite[no pagination]{dirac1958}.
+\end{itemize}
+
+\item Why do corporate or organization authors require double braces in BibTeX?\\
+If a corporate name is entered with single braces:
+\begin{verbatim}
+author = {National Aeronautics and Space Administration}
+\end{verbatim}
+BibTeX parses ``Administration'' as the surname and ``National Aeronautics and Space'' as first names!
+\begin{itemize}
+  \item \textbf{Double braces in \texttt{.bib}:} Corporate names must be protected with double curly braces:
+  \begin{verbatim}
+  author      = {{National Aeronautics and Space Administration}},
+  shortauthor = {NASA},
+  \end{verbatim}
+  \item \textbf{Automatic acronym expansion:} The first citation prints the full corporate name with the acronym in square brackets: \parencite{nasa2011}. Subsequent citations automatically use the acronym: \parencite{nasa2011}.
+\end{itemize}
+
+\item What happens when a book lacks a place of publication or publisher?
+\begin{itemize}
+  \item In standard Leeds-Harvard guidelines, works with an omitted place of publication historically printed \texttt{[no place]}.
+  \item In modern academic practice, place of publication is often omitted for major publishers (e.g. \parencite{hawking1988}). By default, \texttt{leeds-harvard} sets \texttt{no-place=false} to cleanly omit \texttt{[no place]}.
+  \item To enforce strict Leeds-Harvard behaviour (where every missing publication place prints \texttt{[no place]: Publisher}), load the package with:
+  \begin{verbatim}
+  \usepackage[style=leeds-harvard, no-place=true]{biblatex}
+  \end{verbatim}
+  \item If a book has no publisher specified, it correctly prints \texttt{[no publisher]} (e.g. Gibbs 1881).
+\end{itemize}
+
+\item Why should titles in the \texttt{.bib} file be in sentence case?\\
+Leeds-Harvard requires article and book titles to appear in \textbf{sentence case} (only the first word of the title, subtitle, and proper nouns capitalized). BibLaTeX preserves title capitalization as entered in your \texttt{.bib} file. Always protect proper nouns, acronyms, and formulas with curly braces:
+\begin{verbatim}
+  title = {The {Byzantine} generals problem},
+  title = {Evaluation of reinforced concrete and reinforced
+           engineered cementitious composite ({ECC}) members},
+\end{verbatim}
+
+\item Why is there no full stop at the end of reference entries ending in a URL or DOI?\\
+To avoid broken hyperlinks when readers copy text from a PDF, Leeds-Harvard strictly prohibits placing a full stop immediately after a URL or DOI. Trailing punctuation is automatically stripped by the package.
+
+
+
+
+
+\end{enumerate}
+
+
+
+
+
+
+
+
+\section{Physics-Specific Citations and Journals}
+
+In Physics and Astronomy, referencing conventions often rely on automated bibliographic exports (e.g. SAO/NASA ADS, arXiv, APS, AIP, IOP). Leeds-Harvard accommodates these workflows while maintaining university standards:
+
+\subsection{1. Full Journal Titles vs Standard Physics Macros}
+Physics authors routinely use standard AAS/APS macros in BibTeX exports (such as \texttt{\textbackslash apjl}, \texttt{\textbackslash mnras}, \texttt{\textbackslash aap}, \texttt{\textbackslash prl}, \texttt{\textbackslash pra}). However, \textbf{Leeds-Harvard strictly forbids journal abbreviations}.
+
+The \texttt{leeds-harvard} style includes an internal source map that automatically expands these macros into their full official titles during compilation:
+\begin{itemize}
+  \item \texttt{\textbackslash apjl} $\to$ \emph{The Astrophysical Journal Letters}
+  \item \texttt{\textbackslash mnras} $\to$ \emph{Monthly Notices of the Royal Astronomical Society}
+  \item \texttt{\textbackslash aap} $\to$ \emph{Astronomy and Astrophysics}
+  \item \texttt{\textbackslash prl} $\to$ \emph{Physical Review Letters}
+  \item \texttt{\textbackslash pra}, \texttt{\textbackslash prb}, \texttt{\textbackslash prc}, \texttt{\textbackslash prd}, \texttt{\textbackslash pre} $\to$ \emph{Physical Review A}, \emph{B}, \emph{C}, \emph{D}, \emph{E}
+\end{itemize}
+You do \textbf{not} need to load \texttt{aas\_macros.sty} or manually rewrite your BibTeX database.
+
+\subsection{2. Electronic Article Identifiers (\texttt{eid})}
+Modern physics journals (APS *Physical Review*, AIP, IOP, *ApJ Letters*) use article identifiers instead of sequential pagination:
+\begin{itemize}
+  \item \parencite{kurikawa2020}: \emph{Physical Review Research}, \textbf{2}(2), article no: 023307 [no pagination].
+  \item \parencite{2026ApJ..1008L..60C}: \emph{The Astrophysical Journal Letters}, \textbf{1008}(2), article no: L60 [no pagination].
+\end{itemize}
+The package detects \texttt{eid} (or \texttt{eid = pages} from ADS) and formats it as \emph{article no: \dots{} [no pagination]}.
+
+\subsection{3. arXiv Preprints}
+Preprints from arXiv are fully supported with official Leeds-Harvard preprint formatting:
+\begin{itemize}
+  \item \textcite{2015arXiv150102297G} formats as: \\
+    \emph{Grachev, A.A., Leo, L.S., Di Sabatino, S., Fernando, H.J.S., Pardyjak, E.R. and Fairall, C.W. 2015. [Pre-print]. Structure of turbulence in katabatic flows below and above the wind-speed maximum. arXiv. [Online]. Available from:} \url{https://doi.org/10.48550/arXiv.1501.02297}
+\end{itemize}
+
+\subsection{4. Classic Physics Treatises \& Foundations}
+The style cleanly formats landmark physics monographs and papers:
+\begin{itemize}
+  \item \textbf{Quantum Mechanics:} Dirac (\citeyear{dirac1958}, \parencite{dirac1958}), Wheeler and Zurek (\citeyear{wheeler1983}, \parencite{wheeler1983}), Bohm (\citeyear{bohm1983}, \parencite{bohm1983}), Planck (\citeyear{planck1922}, \parencite{planck1922}).
+  \item \textbf{Relativity \& Classical Foundations:} Einstein (\citeyear{einstein1920}, \parencite{einstein1920}), Landau and Lifshitz (\citeyear{landau1976}, \parencite{landau1976}), Newton (\citeyear{newton1999}, \parencite{newton1999}), Lorentz (\citeyear{lorentz1952}, \parencite{lorentz1952}).
+  \item \textbf{Astrophysics \& Gravitation:} Lynden-Bell (\citeyear{1967MNRAS.136..101L}, \parencite{1967MNRAS.136..101L}), Shakura and Sunyaev (\citeyear{shakura1973}, \parencite{shakura1973}), Sunyaev and Zeldovich (\citeyear{1970CoASP...2...66S}, \parencite{1970CoASP...2...66S}), Sample (\citeyear{sample2016}, \parencite{sample2016}).
+  \item \textbf{Applied \& Materials Physics:} Sallo and Olsen (\citeyear{sallo1961}, \parencite{sallo1961}), Royall et al. (\citeyear{royall2013}, \parencite{royall2013}).
+\end{itemize}
+
+\section{Minimal Working Example (MWE)}
+
+Here is a minimal template for your own thesis, paper, or report:
+
+\begin{verbatim}
+\documentclass[a4paper,11pt]{article}
+\usepackage[british]{babel}
+\usepackage{csquotes}
+\usepackage[style=leeds-harvard]{biblatex}
+\addbibresource{references.bib}
+\usepackage[hidelinks]{hyperref}
+
+\begin{document}
+
+According to \textcite{shannon1948}, entropy measures uncertainty.
+This theorem was verified across networks \parencite{tanenbaum2011}.
+
+\printbibliography % Automatically produces section titled "References"
+
+\end{document}
+\end{verbatim}
+
+\vspace{0.5em}
+\noindent \textbf{The above MWE produces the following in-text output:}
+
+According to \textcite{shannon1948}, entropy measures uncertainty.
+This theorem was verified across networks \parencite{tanenbaum2011}.
+
+\vspace{1em}
+\noindent \textbf{And generates the following reference list entries:}
+
+\begin{quote}
+\textbf{References}
+
+Shannon, C.E. 1948. A mathematical theory of communication. \emph{Bell System Technical Journal}. [Online]. \textbf{27}(3), pp.379-423. [Accessed 4 September 2024]. Available from: \url{https://doi.org/10.1002/j.1538-7305.1948.tb01338.x}
+
+\vspace{0.6em}
+Tanenbaum, A.S. and Wetherall, D.J. 2011. \emph{Computer networks}. 5th ed. Boston: Pearson Prentice Hall.
+\end{quote}
+
+\vspace{1.5em}
+\noindent Below is the complete bibliography of all works cited across this test document:
+
+\printbibliography
+
+\end{document}
