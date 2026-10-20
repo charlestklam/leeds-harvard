@@ -7,16 +7,15 @@ It follows the Library's guidance:
 - [Journal article](https://library.leeds.ac.uk/referencing-examples/9/leeds-harvard/11/journal-article)
 - [Common issues](https://library.leeds.ac.uk/info/1402/referencing/50/leeds-harvard-introduction/3)
 
-The style doesn't depend on any engine. It gives the same output on **pdfLaTeX, XeLaTeX and LuaLaTeX**, and the test script checks this.
+The style doesn't depend on any engine. It gives the same output on **pdfLaTeX, XeLaTeX and LuaLaTeX**.
 
 | File | Purpose |
 | --- | --- |
 | `leeds-harvard.bbx` | Reference list (bibliography) style |
 | `leeds-harvard.cbx` | In-text citation style (author–date) |
-| `test/main.tex` | Demo and regression document (uses `iftex` to load fonts safely on each engine) |
-| `test/leeds-harvard-test.bib` | Fixtures copied from the Leeds guide's examples |
-| `test/expected-*.txt` | Expected output strings |
-| `test_all_engines.ps1` | Builds and checks the demo on all three engines |
+| `test.tex` | Demo document showing every citation command and entry type (uses `iftex` to load fonts safely on each engine) |
+| `leeds-harvard-test.bib` | Fixtures copied from the Leeds guide's examples, used by `test.tex` |
+| `test.pdf` | Pre-built output of `test.tex` |
 
 ## Usage
 
@@ -108,18 +107,13 @@ ADS can't supply everything, so check these yourself:
 - **Journals not on the list.** If ADS gives a journal macro the style doesn't know, LaTeX reports an undefined command. Replace it with the full title. See `\lh@adsjournals` in [leeds-harvard.bbx](leeds-harvard.bbx) for the list.
 - **A&A** prints as *Astronomy and Astrophysics*, because an ampersand can't pass through Biber's control file. Write `journal = {Astronomy \& Astrophysics}` if you want the ampersand.
 
-## Testing
+## Trying the demo
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\test_all_engines.ps1
+pdflatex test; biber test; pdflatex test; pdflatex test
 ```
 
-For each engine the script:
-
-1. runs the full compile sequence;
-2. fails on a non-zero exit code, an undefined citation, any biblatex warning or a Biber warning;
-3. pulls the text out of the PDF and checks it against `test/expected-references.txt` and `test/expected-citations.txt`;
-4. checks that all three engines produce identical text.
+XeLaTeX and LuaLaTeX work the same way.
 
 ## Where the output differs from individual guide examples
 
