@@ -158,7 +158,7 @@ To avoid broken hyperlinks when readers copy text from a PDF, Leeds-Harvard stri
 
 In Physics and Astronomy, referencing conventions often rely on automated bibliographic exports (e.g. SAO/NASA ADS, arXiv, APS, AIP, IOP). Leeds-Harvard accommodates these workflows while maintaining university standards:
 
-\subsection{1. Full Journal Titles vs Standard Physics Macros}
+\subsection{Full Journal Titles vs Standard Physics Macros}
 Physics authors routinely use standard AAS/APS macros in BibTeX exports (such as \texttt{\textbackslash apjl}, \texttt{\textbackslash mnras}, \texttt{\textbackslash aap}, \texttt{\textbackslash prl}, \texttt{\textbackslash pra}). However, \textbf{Leeds-Harvard strictly forbids journal abbreviations}.
 
 The \texttt{leeds-harvard} style includes an internal source map that automatically expands these macros into their full official titles during compilation:
@@ -171,7 +171,7 @@ The \texttt{leeds-harvard} style includes an internal source map that automatica
 \end{itemize}
 You do \textbf{not} need to load \texttt{aas\_macros.sty} or manually rewrite your BibTeX database.
 
-\subsection{2. Electronic Article Identifiers (\texttt{eid})}
+\subsection{Electronic Article Identifiers (\texttt{eid})}
 Modern physics journals (APS *Physical Review*, AIP, IOP, *ApJ Letters*) use article identifiers instead of sequential pagination:
 \begin{itemize}
   \item \parencite{kurikawa2020}: \emph{Physical Review Research}, \textbf{2}(2), article no: 023307 [no pagination].
@@ -179,14 +179,14 @@ Modern physics journals (APS *Physical Review*, AIP, IOP, *ApJ Letters*) use art
 \end{itemize}
 The package detects \texttt{eid} (or \texttt{eid = pages} from ADS) and formats it as \emph{article no: \dots{} [no pagination]}.
 
-\subsection{3. arXiv Preprints}
+\subsection{arXiv Preprints}
 Preprints from arXiv are fully supported with official Leeds-Harvard preprint formatting:
 \begin{itemize}
   \item \textcite{2015arXiv150102297G} formats as: \\
     \emph{Grachev, A.A., Leo, L.S., Di Sabatino, S., Fernando, H.J.S., Pardyjak, E.R. and Fairall, C.W. 2015. [Pre-print]. Structure of turbulence in katabatic flows below and above the wind-speed maximum. arXiv. [Online]. Available from:} \url{https://doi.org/10.48550/arXiv.1501.02297}
 \end{itemize}
 
-\subsection{4. Classic Physics Treatises \& Foundations}
+\subsection{Classic Physics Treatises \& Foundations}
 The style cleanly formats landmark physics monographs and papers:
 \begin{itemize}
   \item \textbf{Quantum Mechanics:} Dirac (\citeyear{dirac1958}, \parencite{dirac1958}), Wheeler and Zurek (\citeyear{wheeler1983}, \parencite{wheeler1983}), Bohm (\citeyear{bohm1983}, \parencite{bohm1983}), Planck (\citeyear{planck1922}, \parencite{planck1922}).

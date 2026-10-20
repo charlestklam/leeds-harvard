@@ -2,3 +2,9 @@ test/
 spec.md
 test_all_engines.ps1
 *.bbl
+*aux
+*bcf
+*blg
+*log
+*out
+*xml
